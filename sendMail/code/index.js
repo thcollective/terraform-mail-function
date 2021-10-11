@@ -7,18 +7,28 @@ module.exports["trigger"] = async function (req, res) {
     domain: process.env.MAILGUN_MAIL_DOMAIN,
   });
 
+  const FROM = req["headers"].from;
+  const TO = req["headers"].to;
+  const SUBJECT = req["headers"].subject;
+  const BODY = req["headers"].body;
+
+  if (!FROM || !TO || !SUBJECT || !BODY) {
+    res
+      .status(400)
+      .json("You must pass in FROM, TO, SUBJECT & BODY as headers.");
+    return;
+  }
+
   var mail = {
-    from: process.env.EMAIL_MAIN,
-    to: "realkaiz7@gmail.com",
-    subject: "Hi Kaiz",
-    html: "<b>Testing terraform</b>",
+    from: FROM,
+    to: TO,
+    subject: SUBJECT,
+    html: BODY,
   };
 
   try {
-    const data = await mg.messages().send(mail);
-    // console.log(data);
-    // return data;
-    res.json("Ok");
+    await mg.messages().send(mail);
+    res.json("Queued!");
   } catch (error) {
     res.status(400).json("Error");
   }

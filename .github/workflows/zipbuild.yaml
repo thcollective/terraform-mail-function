@@ -1,0 +1,85 @@
+# name: Zip Files
+
+# on: [pull_request]
+
+# jobs:
+#   zip-files:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: hashicorp/setup-terraform@v1
+      
+#       - name: checkout
+#         uses: actions/checkout@v2
+#         with:
+#           fetch-depth: 0
+          
+#       - name: get changed files
+#         id: getfile
+#         run: |-
+#           echo ${{github.event.pull_request.head.sha}}
+#           echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{github.event.pull_request.head.sha}} | xargs)"
+
+#       - name: for loop
+#         id: getfilename
+#         run : |-
+#           for i in ${{steps.getfile.outputs.files}}
+#           do 
+#             echo $i | sed 's\/.*\\' > test.txt
+#             cat test.txt
+#             myvar=`cat test.txt`
+#             echo $y
+#             if [ $myvar = ".github" ]; then
+#               echo Skipping this file
+#             else
+#               echo Applying this file $myvar
+#               echo "::set-output name=filename::$(echo $myvar)"
+#               echo "test=$myvar/terraform" >> $GITHUB_ENV
+#             fi          
+#           done
+      
+#       - uses: papeloto/action-zip@v1
+#         with:
+#           files: ${{ steps.getfilename.outputs.filename }}/code
+#           recursive: true
+#           dest: ${{ steps.getfilename.outputs.filename }}.zip
+      
+#       - name: Set up Cloud SDK
+#         uses: google-github-actions/setup-gcloud@master
+#         with:
+#           project_id: privcluster904321
+#           service_account_key: ${{ secrets.SECRET_KEY }}
+#           export_default_credentials: true
+      
+#       - name: Check state prefix
+#         run: |-
+#           cd ${{env.test}}
+#           cat main.tf | grep prefix | sed 's\^.*/\\' | sed 's/"//g' > test2.txt
+#           cat test2.txt
+#           output=`cat test2.txt`
+#           if [ $output == ${{ steps.getfilename.outputs.filename }} ]; then 
+#             echo "prefix name matches filename"
+#           else
+#             echo "prefix name DOES NOT MATCH filename"
+#             exit 1
+#           fi
+            
+#       - name: Run terraform
+#         run : |-
+#           cd ${{env.test}}
+#           terraform init
+#           terraform plan
+#           terraform apply -auto-approve 
+#         env:
+#           TF_VAR_apikey: ${{ secrets.APIKEY }}
+      
+#       - name: Show http trigger name
+#         run: |- 
+#           cd ${{env.test}}
+#           cat cloudfunction.tf | grep name | sed 's/=//g' | sed 's/^ *//g' | sed 's/name//g' | sed 's/"//g' | sed 's/ //g' > name.txt
+#           secondvar=`cat name.txt` 
+#           echo https://asia-southeast1-privcluster904321.cloudfunctions.net/$secondvar
+    
+        
+
+
+          
